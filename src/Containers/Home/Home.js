@@ -33,7 +33,7 @@ export default function Home() {
                 <CardMedia
                     className={classes.media}
                     image="la_la_land_silhouette-wide.jpg"
-                    title="Contemplative Reptile"
+                    title="la la land"
                 />
                 <CardContent>
                     <Typography gutterBottom variant="h5" component="h2">
