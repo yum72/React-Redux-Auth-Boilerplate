@@ -110,7 +110,7 @@ const signUp = (userObj) => dispatch => {
                 dispatch({
                     type: SIGN_UP_COMPLETE
                 })
-                dispatch(signIn(userObj))
+                dispatch(signIn(userObj)) //Auto login on successful register
             }
         })
         .catch(function (error) {
