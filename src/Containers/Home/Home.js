@@ -32,7 +32,7 @@ export default function Home() {
             <CardActionArea>
                 <CardMedia
                     className={classes.media}
-                    image="https://homepages.cae.wisc.edu/~ece533/images/airplane.png"
+                    image="la_la_land_silhouette-wide.jpg"
                     title="Contemplative Reptile"
                 />
                 <CardContent>
