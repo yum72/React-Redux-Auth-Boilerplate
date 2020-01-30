@@ -164,6 +164,30 @@ const signUp = (userObj) => dispatch => {
         })
 }
 
+const getProfile = (access_token) => {
+    axios({
+        method: 'get',
+        url: 'http://localhost:3000/api/user/me ',
+        headers: {
+            'Authorization': 'Bearer ' + access_token,
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        }
+    })
+        .then(function (response) {
+            // handle success
+            console.log(response)
+        })
+        .catch(function (error) {
+            // handle error
+            console.log(error.response)
+
+        })
+        .then(function () {
+            // always executed
+        })
+}
+
 const logOut = () => {
     return {
         type: LOG_OUT
@@ -176,5 +200,6 @@ export const actions = {
     signIn,
     signUp,
     setLoginError,
-    setSignupError
+    setSignupError,
+    getProfile
 }
