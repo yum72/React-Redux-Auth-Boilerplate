@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Redirect, Link as RouterLink } from 'react-router-dom'
 
@@ -53,6 +53,8 @@ const useStyles = makeStyles(theme => ({
 
 export default function SignUp() {
     const isLoggedIn = useSelector(state => state.user.isLoggedIn && state.user.jwt !== null)
+    const signupError = useSelector(state => state.user.signupError)
+    const isSignupError = signupError ? true : false
     const classes = useStyles()
     const dispatch = useDispatch()
 
@@ -66,6 +68,10 @@ export default function SignUp() {
     const handleOnChange = (value, name) => {
         setValues({ ...values, [name]: value })
     }
+
+    useEffect(() => {
+        dispatch(actions.logOut()) //reset state and clear any errors
+    }, [dispatch])
 
     if (isLoggedIn) return <Redirect to="/Home" />
 
@@ -106,6 +112,7 @@ export default function SignUp() {
                         </Grid>
                         <Grid item xs={12}>
                             <TextField
+                                error={isSignupError}
                                 variant="outlined"
                                 margin="normal"
                                 required
@@ -115,6 +122,7 @@ export default function SignUp() {
                                 name="username"
                                 autoComplete="username"
                                 autoFocus
+                                helperText={signupError}
                                 onChange={(e) => handleOnChange(e.target.value, e.target.name)}
                             />
                         </Grid>

@@ -6,6 +6,8 @@ const LOG_OUT = 'redux/users/LOG_OUT'
 const SIGN_IN = 'redux/users/SIGN_IN'
 const SIGN_UP = 'redux/users/SIGN_UP'
 const SIGN_UP_COMPLETE = 'redux/users/SIGN_UP_COMPLETE'
+const SET_LOGIN_ERROR = 'redux/users/SET_LOGIN_ERROR'
+const SET_SIGNUP_ERROR = 'redux/users/SET_SIGNUP_ERROR'
 
 // Reducer
 
@@ -13,7 +15,9 @@ const initialState = {
     profileName: null,
     isLoggedIn: false,
     isFetching: false,
-    jwt: null
+    jwt: null,
+    loginError: null,
+    signupError: null
 }
 
 const currentUser = (state = initialState, action) => {
@@ -24,24 +28,40 @@ const currentUser = (state = initialState, action) => {
                 profileName: action.payload.username,
                 isLoggedIn: true,
                 isFetching: false,
-                jwt: action.payload.jwt
+                jwt: action.payload.jwt,
+                loginError: null
             }
         case LOG_OUT:
             return initialState
         case SIGN_IN:
             return {
                 ...state,
-                isFetching: true
+                isFetching: true,
+                loginError: null
             }
         case SIGN_UP:
             return {
                 ...state,
-                isFetching: true
+                isFetching: true,
+                signupError: null
             }
         case SIGN_UP_COMPLETE:
             return {
                 ...state,
-                isFetching: false
+                isFetching: false,
+                signupError: null
+            }
+        case SET_LOGIN_ERROR:
+            return {
+                ...state,
+                isFetching: false,
+                loginError: action.payload.error
+            }
+        case SET_SIGNUP_ERROR:
+            return {
+                ...state,
+                isFetching: false,
+                signupError: action.payload.error
             }
         default:
             return state
@@ -52,10 +72,24 @@ export default currentUser
 
 
 // Action Creators
-const setUser = (userObj) => {
+const setUser = userObj => {
     return {
         type: SET_USER,
         payload: userObj
+    }
+}
+
+const setLoginError = error => {
+    return {
+        type: SET_LOGIN_ERROR,
+        payload: { error }
+    }
+}
+
+const setSignupError = error => {
+    return {
+        type: SET_SIGNUP_ERROR,
+        payload: { error }
     }
 }
 
@@ -73,18 +107,21 @@ const signIn = (userObj) => dispatch => {
     })
         .then(function (response) {
             // handle success
-            dispatch({
-                type: SET_USER,
-                payload:
-                {
-                    username: userObj.username,
-                    jwt: response.data.jwt
-                }
-            })
+            dispatch(setUser({
+                username: userObj.username,
+                jwt: response.data.jwt
+            }))
+
         })
         .catch(function (error) {
             // handle error
-            console.log(error)
+            let errorMessage = 'Network Error'
+            if (error.response) {
+                errorMessage = error.response.data.message
+                errorMessage = errorMessage === 'WRONG_CREDENTIAL' ? 'Incorrect username or password' : errorMessage
+                //User does not exist. Sign up for an account
+            }
+            dispatch(setLoginError(errorMessage))
         })
         .then(function () {
             // always executed
@@ -106,7 +143,6 @@ const signUp = (userObj) => dispatch => {
         .then(function (response) {
             // handle success
             if (response.data.userId) {
-                console.log('user created!')
                 dispatch({
                     type: SIGN_UP_COMPLETE
                 })
@@ -115,7 +151,13 @@ const signUp = (userObj) => dispatch => {
         })
         .catch(function (error) {
             // handle error
-            console.log(error)
+            let errorMessage = 'Network Error'
+            if (error.response) {
+                errorMessage = error.response.data.message
+                errorMessage = errorMessage === 'USERNAME_IS_NOT_AVAILABLE' ? 'Username/Email is not available' : errorMessage
+            }
+            dispatch(setSignupError(errorMessage))
+
         })
         .then(function () {
             // always executed
@@ -132,5 +174,7 @@ export const actions = {
     setUser,
     logOut,
     signIn,
-    signUp
+    signUp,
+    setLoginError,
+    setSignupError
 }

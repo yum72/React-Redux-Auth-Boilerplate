@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Redirect, Link as RouterLink } from 'react-router-dom'
 
@@ -54,6 +54,9 @@ const useStyles = makeStyles(theme => ({
 
 export default function SignIn() {
     const isLoggedIn = useSelector(state => state.user.isLoggedIn && state.user.jwt !== null)
+    const loginError = useSelector(state => state.user.loginError)
+    const isLoginError = loginError ? true : false
+
     const classes = useStyles()
     const dispatch = useDispatch()
 
@@ -66,6 +69,11 @@ export default function SignIn() {
     const handleOnChange = (value, name) => {
         setValues({ ...values, [name]: value })
     }
+
+    useEffect(() => {
+        dispatch(actions.logOut()) //reset state and clear any errors
+    }, [dispatch])
+
 
     if (isLoggedIn) return <Redirect to="/Home" />
 
@@ -81,6 +89,7 @@ export default function SignIn() {
         </Typography>
                 <form className={classes.form} noValidate>
                     <TextField
+                        error={isLoginError}
                         variant="outlined"
                         margin="normal"
                         required
@@ -89,10 +98,12 @@ export default function SignIn() {
                         label="Email Address/ Username"
                         name="username"
                         autoComplete="username"
+                        helperText={loginError}
                         autoFocus
                         onChange={(e) => handleOnChange(e.target.value, e.target.name)}
                     />
                     <TextField
+                        error={isLoginError}
                         variant="outlined"
                         margin="normal"
                         required
