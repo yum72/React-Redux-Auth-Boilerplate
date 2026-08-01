@@ -1,12 +1,30 @@
-import { Link as RouterLink } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import AppBar from '@mui/material/AppBar';
-import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
-import Button from '@mui/material/Button';
-import Link from '@mui/material/Link';
+import { ChevronDownIcon, LogOutIcon } from 'lucide-react';
 
-import { logOut, selectIsLoggedIn, selectAuth } from '../features/auth/authSlice';
+import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger
+} from '@/components/ui/dropdown-menu';
+import { cn } from '@/lib/utils';
+import {
+  logOut,
+  selectIsLoggedIn,
+  selectAuth
+} from '../features/auth/authSlice';
+
+/* NavLink rather than Link, so the current page is marked in the nav instead of
+   every link looking identical wherever you are. */
+const navLinkClass = ({ isActive }) =>
+  cn(
+    'text-sm font-medium transition-colors',
+    isActive ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'
+  );
 
 export default function Header() {
   const dispatch = useDispatch();
@@ -14,49 +32,48 @@ export default function Header() {
   const { profileName } = useSelector(selectAuth);
 
   return (
-    <AppBar
-      position="static"
-      color="default"
-      elevation={0}
-      sx={{ borderBottom: 1, borderColor: 'divider', mb: 4 }}
-    >
-      <Toolbar sx={{ flexWrap: 'wrap' }}>
-        <Typography variant="h6" color="inherit" noWrap sx={{ flexGrow: 1 }}>
+    <header className="border-b">
+      <div className="mx-auto flex h-16 w-full max-w-5xl items-center gap-6 px-4">
+        <Link to="/" className="font-semibold tracking-tight">
           Company name
-        </Typography>
+        </Link>
 
-        <nav>
-          <Link component={RouterLink} to="/" variant="button" color="text.primary" sx={{ mx: 1.5 }}>
+        <nav className="flex items-center gap-5">
+          <NavLink to="/" className={navLinkClass}>
             Public
-          </Link>
+          </NavLink>
           {isLoggedIn && (
-            <Link component={RouterLink} to="/home" variant="button" color="text.primary" sx={{ mx: 1.5 }}>
+            <NavLink to="/home" className={navLinkClass}>
               Home
-            </Link>
+            </NavLink>
           )}
         </nav>
 
-        {isLoggedIn ? (
-          <>
-            <Typography variant="body2" color="text.secondary" sx={{ mx: 1.5 }}>
-              {profileName}
-            </Typography>
-            <Button
-              component={RouterLink}
-              to="/"
-              onClick={() => dispatch(logOut())}
-              color="primary"
-              variant="outlined"
-            >
-              Log out
+        <div className="ml-auto">
+          {isLoggedIn ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm">
+                  {profileName}
+                  <ChevronDownIcon />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-44">
+                <DropdownMenuLabel>Signed in</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onSelect={() => dispatch(logOut())}>
+                  <LogOutIcon />
+                  Log out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <Button asChild variant="outline" size="sm">
+              <Link to="/signin">Log in</Link>
             </Button>
-          </>
-        ) : (
-          <Button component={RouterLink} to="/signin" color="primary" variant="outlined">
-            Log in
-          </Button>
-        )}
-      </Toolbar>
-    </AppBar>
+          )}
+        </div>
+      </div>
+    </header>
   );
 }

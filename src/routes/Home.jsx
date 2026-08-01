@@ -1,11 +1,19 @@
 import { useSelector, useDispatch } from 'react-redux';
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
-import CardActions from '@mui/material/CardActions';
-import Button from '@mui/material/Button';
-import Typography from '@mui/material/Typography';
 
-import { increment, decrement, selectCount } from '../features/counter/counterSlice';
+import { Button } from '@/components/ui/button';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle
+} from '@/components/ui/card';
+import {
+  increment,
+  decrement,
+  selectCount
+} from '../features/counter/counterSlice';
 import { selectAuth } from '../features/auth/authSlice';
 
 export default function Home() {
@@ -14,27 +22,34 @@ export default function Home() {
   const dispatch = useDispatch();
 
   return (
-    <Card variant="outlined" sx={{ maxWidth: 360 }}>
-      <CardContent>
-        <Typography variant="overline" color="text.secondary">
+    <Card className="max-w-sm">
+      <CardHeader>
+        <CardTitle className="text-muted-foreground text-xs font-medium tracking-widest uppercase">
           Protected page
-        </Typography>
-        <Typography variant="h3" component="p" gutterBottom>
-          {count}
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
-          Signed in as {profileName}. The counter is not persisted, so it resets
-          on reload while your session survives.
-        </Typography>
+        </CardTitle>
+        <CardDescription>Signed in as {profileName}</CardDescription>
+      </CardHeader>
+
+      <CardContent>
+        <p className="text-5xl font-semibold tabular-nums">{count}</p>
+        <p className="text-muted-foreground mt-3 text-sm leading-relaxed">
+          The counter is not persisted, so it resets on reload while the session
+          survives. Only the slices listed in{' '}
+          <code className="bg-muted rounded px-1 py-0.5 text-xs">
+            src/app/persist.js
+          </code>{' '}
+          are saved.
+        </p>
       </CardContent>
-      <CardActions>
-        <Button size="small" onClick={() => dispatch(increment())}>
+
+      <CardFooter className="gap-2">
+        <Button variant="outline" size="sm" onClick={() => dispatch(increment())}>
           Increment
         </Button>
-        <Button size="small" onClick={() => dispatch(decrement())}>
+        <Button variant="outline" size="sm" onClick={() => dispatch(decrement())}>
           Decrement
         </Button>
-      </CardActions>
+      </CardFooter>
     </Card>
   );
 }

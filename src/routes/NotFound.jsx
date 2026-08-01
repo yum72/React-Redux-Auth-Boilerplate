@@ -1,17 +1,16 @@
-import Typography from '@mui/material/Typography';
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+
+import { Button } from '@/components/ui/button';
 
 export default function NotFound() {
   return (
-    <Box sx={{ maxWidth: 640 }}>
-      <Typography variant="h4" component="h1" gutterBottom>
+    <div className="max-w-xl">
+      <h1 className="text-3xl font-semibold tracking-tight">
         404, page not found
-      </Typography>
-      <Button component={RouterLink} to="/" variant="outlined">
-        Back to start
+      </h1>
+      <Button asChild variant="outline" className="mt-6">
+        <Link to="/">Back to start</Link>
       </Button>
-    </Box>
+    </div>
   );
 }
